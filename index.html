@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Balloon FunRide - 3D Endless Runner</title>
+  <meta name="description" content="Hold burner to soar through skies, dodge laser zappers, storm clouds and steampunk drones in this 3D Jetpack Joyride style hot air balloon runner!" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- In-Game HUD -->
+  <header id="hud" class="hud-layer" aria-label="Game HUD">
+    <!-- Top-Left: start.ng Player Profile Card -->
+    <div id="player-card" class="glass-pill player-badge">
+      <img id="player-face" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='24' fill='%23a55eea'/%3E%3Ccircle cx='24' cy='20' r='11' fill='%238d5524'/%3E%3Cpath d='M10 44c0-7.7 6.3-14 14-14s14 6.3 14 14' fill='%230c6e5a'/%3E%3C/svg%3E" alt="Player Face" />
+      <div class="player-info">
+        <span id="player-name" class="player-name">Guest Pilot</span>
+        <span id="player-account" class="player-account">@start.ng</span>
+      </div>
+      <a id="player-sign-in" class="btn-pill-action" href="#" title="Sign in with start.ng">Sign in</a>
+    </div>
+
+    <!-- Top-Right: Distance, Coins, & Speed Stats -->
+    <div class="hud-stats-group">
+      <div class="glass-pill stat-badge stat-coins">
+        <span class="coin-icon" aria-hidden="true">🪙</span>
+        <span id="stat-coins" class="stat-value">0</span>
+      </div>
+      <div class="glass-pill stat-badge stat-distance">
+        <span class="dist-icon" aria-hidden="true">🚩</span>
+        <span id="stat-distance" class="stat-value">0</span>
+        <span class="stat-unit">m</span>
+      </div>
+      <button id="btn-mute" class="glass-pill icon-btn" aria-label="Toggle Sound" title="Toggle Sound">
+        <span id="mute-icon" aria-hidden="true">🔊</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Flight Controls Feedback & Burner Fuel Gauge -->
+  <div id="flight-gauge" class="flight-gauge-container">
+    <div class="burner-indicator">
+      <div id="burner-bar" class="burner-bar-fill"></div>
+    </div>
+    <span id="burner-label" class="burner-status-text">BURNER READY</span>
+  </div>
+
+  <!-- Hazard Warning Indicators (Appears on right edge when hazard approaches) -->
+  <div id="hazard-warnings" class="hazard-warnings-overlay" aria-hidden="true"></div>
+
+  <!-- Start Menu Screen -->
+  <div id="start-overlay" class="overlay-screen active">
+    <div class="modal-card menu-card">
+      <div class="game-logo-wrapper">
+        <div class="balloon-badge-icon" aria-hidden="true">🎈</div>
+        <h1 class="game-title">BALLOON<br /><span class="title-highlight">FUNRIDE</span></h1>
+        <p class="game-tagline">3D Jetpack Hot Air Balloon Runner</p>
+      </div>
+
+      <div class="how-to-play-grid">
+        <div class="tip-card">
+          <div class="tip-icon">🔥</div>
+          <div class="tip-text">
+            <strong>HOLD SPACE / CLICK</strong>
+            <span>Fire the burner to climb</span>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🪂</div>
+          <div class="tip-text">
+            <strong>RELEASE</strong>
+            <span>Glide downward with gravity</span>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">⚡</div>
+          <div class="tip-text">
+            <strong>DODGE HAZARDS</strong>
+            <span>Evade laser zappers, storms & drones</span>
+          </div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🪙</div>
+          <div class="tip-text">
+            <strong>COLLECT & BOOST</strong>
+            <span>Grab gold coins and fly through boost rings</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Character & Balloon Style Sync Indicator -->
+      <div id="style-preview-bar" class="style-preview-box">
+        <span class="style-sync-dot"></span>
+        <span id="style-status-text">Synced with your start.ng character</span>
+      </div>
+
+      <div class="menu-actions">
+        <button id="btn-start" class="btn-primary-glow btn-large">
+          <span class="btn-text">FLY NOW</span>
+          <span class="btn-subtext">Press Spacebar or Click</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <dialog id="game-over-dialog" class="game-over-dialog" aria-labelledby="game-over-title">
+    <div class="modal-card game-over-card">
+      <div class="game-over-header">
+        <div class="defeat-badge">💥</div>
+        <h2 id="game-over-title" class="game-over-title">FLIGHT OVER</h2>
+        <p id="defeat-cause" class="defeat-cause-text">You hit an electric laser zapper!</p>
+      </div>
+
+      <!-- Run Summary Scores -->
+      <div class="score-summary-grid">
+        <div class="summary-box">
+          <span class="summary-label">DISTANCE</span>
+          <div class="summary-stat-row">
+            <span id="summary-distance" class="summary-value">0</span>
+            <span class="summary-unit">m</span>
+          </div>
+        </div>
+        <div class="summary-box">
+          <span class="summary-label">COINS COLLECTED</span>
+          <div class="summary-stat-row">
+            <span class="summary-coin-icon">🪙</span>
+            <span id="summary-coins" class="summary-value">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="save-status-banner" class="status-banner info">
+        Connecting to start.ng leaderboard...
+      </div>
+
+      <!-- Global Leaderboard Table -->
+      <div class="leaderboard-section">
+        <div class="leaderboard-header">
+          <span class="lb-title">GLOBAL LEADERBOARD</span>
+          <span class="lb-badge">Top 10 Pilots</span>
+        </div>
+        <div class="leaderboard-table-container">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th class="col-rank">#</th>
+                <th class="col-pilot">Pilot</th>
+                <th class="col-dist">Distance</th>
+                <th class="col-coins">Coins</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <tr>
+                <td colspan="4" class="lb-loading">Loading top pilots...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="game-over-actions">
+        <button id="btn-restart" class="btn-primary-glow btn-large">
+          <span class="btn-text">PLAY AGAIN</span>
+          <span class="btn-subtext">Press Space or Click</span>
+        </button>
+        <a id="btn-leaderboard-signin" class="btn-secondary-link" href="#" hidden>
+          Sign in to save your score
+        </a>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Hidden start.ng Connect Frame for Authentication & Leaderboard -->
+  <iframe id="startng-frame" src="https://start.ng/connect" hidden title="start.ng bridge"></iframe>
+
+  <!-- Main Game Script -->
+  <script type="module" src="./game.js"></script>
+</body>
+</html>

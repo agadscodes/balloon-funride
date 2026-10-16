@@ -1,0 +1,9 @@
+{
+  "name": "balloon-funride",
+  "version": "1.0.0",
+  "description": "3D Jetpack Joyride style Hot Air Balloon Endless Runner for start.ng",
+  "type": "module",
+  "keywords": ["start.ng", "game", "three.js", "arcade", "endless-runner"],
+  "author": "agadscodes",
+  "license": "MIT"
+}
