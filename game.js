@@ -1721,7 +1721,15 @@ class BalloonFunRideGame {
   }
 }
 
-// Instantiate game on page load
-window.addEventListener('DOMContentLoaded', () => {
-  new BalloonFunRideGame();
-});
+// Instantiate game on page load safely
+function initBalloonGame() {
+  window.game = new BalloonFunRideGame();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBalloonGame);
+} else {
+  initBalloonGame();
+}
+
+
