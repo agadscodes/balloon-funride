@@ -1,7 +1,6 @@
 # 🎈 Balloon FunRide
 
 > **Play Live on start.ng**: [https://balloon-funride.start.ng](https://balloon-funride.start.ng)  
-> **Publishing Approval Link**: [https://start.ng/approve/nrl7zqg55EwODhm8](https://start.ng/approve/nrl7zqg55EwODhm8)
 
 A complete 3D side-scrolling arcade runner built with Three.js for the [start.ng](https://start.ng) platform. Inspired by classic endless runners like *Jetpack Joyride*, but soaring in a majestic **Hot Air Balloon**!
 
